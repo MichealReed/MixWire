@@ -169,7 +169,8 @@ class _MixWirePageState extends State<MixWirePage>
     for (final outputId in connectedOutputIds) {
       try {
         final output = _outputs.firstWhere((o) => o.id == outputId);
-        output.writeAudio(processedData, sampleRate, channels);
+        // Add inputId as first parameter
+        output.writeAudio(inputId, processedData, sampleRate, channels);
       } catch (e) {
         print('Output not found: $outputId');
       }
@@ -271,6 +272,11 @@ class _MixWirePageState extends State<MixWirePage>
       _inputs.removeWhere((i) => i.id == inputId);
       _connections.remove(inputId);
       _inputPositions.remove(inputId);
+
+      // Remove from all output mixers
+      for (final output in _outputs) {
+        output.removeInput(inputId);
+      }
     });
   }
 
